@@ -1,0 +1,6 @@
+competition formats
+1 -> double round robin league
+2 -> cup
+3 -> 2 team supercup
+4 -> 4 team supercup
+5 -> uefa continental

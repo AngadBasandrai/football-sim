@@ -1,0 +1,15 @@
+[
+    {
+        "positionId": 0,
+        "position": "Striker",
+        "scoring": 10,
+        "assisting": 3,
+        "passing": 4,
+        "dribbling": 2,
+        "tackling": 1,
+        "stopping": 0,
+        "diving": 0,
+        "yellowcard": 2,
+        "redcard": 0
+    }
+]

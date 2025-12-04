@@ -1,0 +1,34 @@
+[
+    {
+        "nationId": 0,
+        "compId": 0,
+        "format": 0,
+        "compName": "Bundesliga",
+        "continent1Spots": 4,
+        "continent2Spots": 1,
+        "continent3Spots": 1,
+        "reputation": 85
+    },
+
+    {
+        "nationId": 0,
+        "compId": 1,
+        "format": 1,
+        "compName": "DFB Pokal",
+        "continent1Spots": 0,
+        "continent2Spots": 1,
+        "continent3Spots": 0,
+        "reputation": 70
+    },
+
+    {
+        "nationId": 0,
+        "compId": 2,
+        "format": 2,
+        "compName": "DFB Supercup",
+        "continent1Spots": 0,
+        "continent2Spots": 0,
+        "continent3Spots": 0,
+        "reputation": 30
+    }
+]

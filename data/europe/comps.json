@@ -1,0 +1,26 @@
+[
+    {
+        "continentId": 0,
+        "compId": 1000,
+        "tier": 1,
+        "format": 5,
+        "compName": "UEFA Champions League",
+        "reputation": 95
+    },
+    {
+        "continentId": 0,
+        "compId": 1001,
+        "tier": 2,
+        "format": 5,
+        "compName": "UEFA Europa League",
+        "reputation": 80
+    },
+    {
+        "continentId": 0,
+        "compId": 1002,
+        "tier": 3,
+        "format": 5,
+        "compName": "UEFA Europa Conference League",
+        "reputation": 65
+    }
+]
