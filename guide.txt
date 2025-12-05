@@ -4,3 +4,6 @@ competition formats
 3 -> 2 team supercup
 4 -> 4 team supercup
 5 -> uefa continental
+
+
+TODO: cup screen like league screen, fixes to reputation display for competitions

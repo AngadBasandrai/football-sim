@@ -1,34 +1,38 @@
 [
-    {
-        "nationId": 0,
-        "compId": 0,
-        "format": 0,
-        "compName": "Bundesliga",
-        "continent1Spots": 4,
-        "continent2Spots": 1,
-        "continent3Spots": 1,
-        "reputation": 85
-    },
-
-    {
-        "nationId": 0,
-        "compId": 1,
-        "format": 1,
-        "compName": "DFB Pokal",
-        "continent1Spots": 0,
-        "continent2Spots": 1,
-        "continent3Spots": 0,
-        "reputation": 70
-    },
-
-    {
-        "nationId": 0,
-        "compId": 2,
-        "format": 2,
-        "compName": "DFB Supercup",
-        "continent1Spots": 0,
-        "continent2Spots": 0,
-        "continent3Spots": 0,
-        "reputation": 30
-    }
+  {
+    "compId": 0,
+    "compName": "Bundesliga",
+    "shortName": "BL",
+    "nationId": 0,
+    "continentId": 0,
+    "tier": 1,
+    "format": 0,
+    "noOfTeams": 18,
+    "noOfRounds": 2,
+    "reputationFactor": 85
+  },
+  {
+    "compId": 1,
+    "compName": "2. Bundesliga",
+    "shortName": "2BL",
+    "nationId": 0,
+    "continentId": 0,
+    "tier": 2,
+    "format": 0,
+    "noOfTeams": 18,
+    "noOfRounds": 2,
+    "reputationFactor": 40
+  },
+  {
+    "compId": 2,
+    "compName": "DFB-Pokal",
+    "shortName": "DFB-Pokal",
+    "nationId": 0,
+    "continentId": 0,
+    "tier": 1,
+    "format": 1,
+    "noOfTeams": 0,
+    "noOfRounds": 0,
+      "reputationFactor": 70
+  }
 ]

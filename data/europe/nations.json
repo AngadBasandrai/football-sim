@@ -2,9 +2,10 @@
     {
         "nationId": 0,
         "nationName": "Germany",
-        "continentId": 0,
-        "attack": 84,
-        "defense": 83,
-        "midfield": 91
+        "nationReputation": 90,
+        "ntAttack": 90,
+        "ntMidfield": 88,
+        "ntDefense": 89,
+        "ntGoalkeeping": 87
     }
 ]
