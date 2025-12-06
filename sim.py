@@ -139,7 +139,7 @@ def load_continent(cont_folder_name: str) -> None:
                         if tid is not None and tid not in TEAM_ID_MAP:
                             TEAM_ID_MAP[tid] = t
 
-            if comp_format in (0, 1):
+            if comp_format in (0, 1, 6):
                 nation_name = nation_name_by_id.get(
                     (matched_cont_id, matched_nation_id),
                     f"Nation {nation_id}"
@@ -294,7 +294,7 @@ def _simulate_match(home: Dict, away: Dict, force_winner: bool = False) -> Tuple
     r_home = _team_rating(home)
     r_away = _team_rating(away)
 
-    rating_diff = (r_home - r_away) / 9.0
+    rating_diff = (r_home - r_away)
     rating_factor_home = 1.0 + rating_diff
     rating_factor_away = 1.0 - rating_diff
 

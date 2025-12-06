@@ -1,9 +1,7 @@
 competition formats
 1 -> double round robin league
 2 -> cup
-3 -> 2 team supercup
-4 -> 4 team supercup
 5 -> uefa continental
+6 -> supercup
 
-
-TODO: cup screen like league screen, fixes to reputation display for competitions
+TODO: cup screen like league screen, trophies display in team tab, team logo size, promotion/relegation, fix england

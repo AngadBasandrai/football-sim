@@ -1,54 +1,39 @@
 [
   {
-    "compId": 400,
-    "compName": "La Liga",
-    "shortName": "LL",
-    "nationId": 4,
     "continentId": 0,
+    "compId": 1000,
     "tier": 1,
-    "format": 0,
-    "noOfTeams": 16,
-    "noOfRounds": 2,
-    "reputationFactor": 90
+    "format": 5,
+    "compName": "UEFA Champions League",
+    "shortName": "UCL",
+    "reputation": 95
   },
   {
-    "compId": 401,
-    "compName": "La Liga 2",
-    "shortName": "LL2",
-    "nationId": 4,
     "continentId": 0,
+    "compId": 1001,
     "tier": 2,
-    "format": 0,
-    "noOfTeams": 16,
-    "noOfRounds": 2,
-    "reputationFactor": 70
+    "format": 5,
+    "compName": "UEFA Europa League",
+    "shortName": "UEL",
+    "reputation": 85
   },
   {
-    "compId": 402,
-    "compName": "Copa del Rey",
-    "shortName": "CdR",
-    "nationId": 4,
     "continentId": 0,
-    "tier": 1,
-    "format": 1,
-    "noOfTeams": 0,
-    "noOfRounds": 0,
-    "reputationFactor": 78
+    "compId": 1002,
+    "tier": 3,
+    "format": 5,
+    "compName": "UEFA Europa Conference League",
+    "shortName": "UECL",
+    "reputation": 75
   },
   {
-    "compId": 403,
-    "compName": "Supercopa de Espa\u00f1a",
-    "shortName": "Supercup ESP",
-    "nationId": 4,
     "continentId": 0,
+    "compId": 1003,
     "tier": 1,
     "format": 6,
-    "noOfTeams": 2,
-    "noOfRounds": 1,
-    "reputationFactor": 60,
-    "superCupOf": [
-      400,
-      402
-    ]
+    "compName": "UEFA Super Cup",
+    "shortName": "USC",
+    "reputation": 80,
+    "superCupOf": [1000, 1001]
   }
 ]
