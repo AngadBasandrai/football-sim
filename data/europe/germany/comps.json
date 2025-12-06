@@ -33,6 +33,34 @@
     "format": 1,
     "noOfTeams": 0,
     "noOfRounds": 0,
-      "reputationFactor": 70
+    "reputationFactor": 70
+  },
+  {
+    "compId": 3,
+    "compName": "3. Liga",
+    "shortName": "3L",
+    "nationId": 0,
+    "continentId": 0,
+    "tier": 3,
+    "format": 0,
+    "noOfTeams": 12,
+    "noOfRounds": 2,
+    "reputationFactor": 30
+  },
+  {
+    "compId": 4,
+    "compName": "DFL-Supercup",
+    "shortName": "DFL-Supercup",
+    "nationId": 0,
+    "continentId": 0,
+    "tier": 1,
+    "format": 6,
+    "noOfTeams": 2,
+    "noOfRounds": 1,
+    "reputationFactor": 70,
+    "superCupOf": [
+      0,
+      2
+    ]
   }
 ]

@@ -1,0 +1,54 @@
+[
+  {
+    "compId": 200,
+    "compName": "Ligue 1",
+    "shortName": "L1",
+    "nationId": 2,
+    "continentId": 0,
+    "tier": 1,
+    "format": 0,
+    "noOfTeams": 16,
+    "noOfRounds": 2,
+    "reputationFactor": 82
+  },
+  {
+    "compId": 201,
+    "compName": "Ligue 2",
+    "shortName": "L2",
+    "nationId": 2,
+    "continentId": 0,
+    "tier": 2,
+    "format": 0,
+    "noOfTeams": 16,
+    "noOfRounds": 2,
+    "reputationFactor": 65
+  },
+  {
+    "compId": 202,
+    "compName": "Coupe de France",
+    "shortName": "CdF",
+    "nationId": 2,
+    "continentId": 0,
+    "tier": 1,
+    "format": 1,
+    "noOfTeams": 0,
+    "noOfRounds": 0,
+    "reputationFactor": 75
+  },
+  {
+    "compId": 203,
+    "compName": "Troph\u00e9e des Champions",
+    "shortName": "Supercup FRA",
+    "nationId": 2,
+    "continentId": 0,
+    "tier": 1,
+    "format": 6,
+    "noOfTeams": 2,
+    "noOfRounds": 1,
+    "reputationFactor": 60,
+    "superCupOf": [
+      200,
+      202
+    ]
+  }
+]

@@ -1266,3 +1266,442 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+
+# ==================== Extended Continental & Coefficient System ====================
+
+# Additional globals for coefficients and super cups
+CLUB_COEFFICIENTS = {}
+NATION_COEFFICIENTS = {}
+TEAM_NATION_KEYS = {}
+SUPER_CUPS = {}  # compId -> list of source competition IDs
+
+
+def _build_team_nation_keys():
+    """Infer mapping from teamId to (continent_folder, nationId)."""
+    global TEAM_NATION_KEYS
+    TEAM_NATION_KEYS = {}
+    # Build continentId -> possible folders map
+    cont_id_to_folders = {}
+    for cont_folder, nations in NATIONS_BY_CONTINENT.items():
+        for n in nations:
+            cid = n.get("continentId")
+            if cid is None:
+                continue
+            cont_id_to_folders.setdefault(cid, set()).add(cont_folder)
+
+    # Build nation lookup per folder
+    for tid, team in TEAM_ID_MAP.items():
+        nid = team.get("teamNationId")
+        cid = team.get("continentId")
+        if nid is None or cid is None:
+            continue
+        folders = cont_id_to_folders.get(cid, [])
+        found_key = None
+        for cf in folders:
+            for n in NATIONS_BY_CONTINENT.get(cf, []):
+                if n.get("nationId") == nid:
+                    found_key = (cf, nid)
+                    break
+            if found_key:
+                break
+        if found_key:
+            TEAM_NATION_KEYS[tid] = found_key
+
+
+def _build_supercup_configs():
+    """Scan all competitions (nation + continent level) to find super cups."""
+    global SUPER_CUPS
+    SUPER_CUPS = {}
+
+    # Nation-level super cups
+    for comps in NATION_COMPS.values():
+        for comp in comps:
+            if comp.get("format") == 6:  # our custom supercup type
+                cid = comp.get("compId")
+                if cid is None:
+                    continue
+                SUPER_CUPS[cid] = comp.get("superCupOf", [])
+
+    # Continent-level super cups
+    for cont_folder, comps in CONTINENT_LEVEL_COMPS.items():
+        for comp in comps:
+            if comp.get("format") == 6:
+                cid = comp.get("compId")
+                if cid is None:
+                    continue
+                SUPER_CUPS[cid] = comp.get("superCupOf", [])
+
+
+def _allocate_continental_slots(cont_folder: str):
+    """Allocate continental slots per top domestic league using nation coefficients.
+
+    Returns:
+        slots_map: dict keyed by continental compId, with values being
+                   mapping {domestic_league_compId: slots}.
+    """
+    # Gather top leagues per nation in this continent
+    leagues = []
+    league_by_comp = {}
+
+    for (cf, nid), folder in NATION_FOLDERS.items():
+        if cf != cont_folder:
+            continue
+        nation_path = os.path.join(DATA_DIR, cf, folder)
+        comps = NATION_COMPS.get(nation_path, [])
+        top_league = None
+        for comp in comps:
+            if comp.get("format") == 0 and comp.get("tier") == 1:
+                top_league = comp
+                break
+        if not top_league:
+            continue
+        comp_id = top_league.get("compId")
+        base_rep = top_league.get("reputationFactor", top_league.get("reputation", 50))
+        nation_coeff = NATION_COEFFICIENTS.get((cf, nid), 0.0)
+        score = base_rep + nation_coeff
+        leagues.append({
+            "nationId": nid,
+            "compId": comp_id,
+            "score": score
+        })
+        league_by_comp[comp_id] = top_league
+
+    leagues.sort(key=lambda x: x["score"], reverse=True)
+    rank_by_comp = {info["compId"]: idx + 1 for idx, info in enumerate(leagues)}
+
+    slots_map = {}
+    comps = CONTINENT_LEVEL_COMPS.get(cont_folder, [])
+    # Order continental competitions by tier (1: UCL, 2: UEL, 3: UECL)
+    cont_list = [c for c in comps if c.get("format") == 5]
+    cont_list.sort(key=lambda c: c.get("tier", 1))
+
+    for comp in cont_list:
+        cid = comp.get("compId")
+        tier = comp.get("tier", 1)
+        league_slots = {}
+        for info in leagues:
+            r = rank_by_comp.get(info["compId"], 999)
+            if tier == 1:
+                # Champions League style
+                if r <= 4:
+                    slots = 4
+                elif r <= 6:
+                    slots = 3
+                elif r <= 9:
+                    slots = 2
+                else:
+                    slots = 1
+            elif tier == 2:
+                # Europa League style
+                if r <= 5:
+                    slots = 2
+                elif r <= 10:
+                    slots = 1
+                else:
+                    slots = 0
+            else:
+                # Conference League style
+                if r <= 8:
+                    slots = 2
+                else:
+                    slots = 1
+            league_slots[info["compId"]] = slots
+        slots_map[cid] = league_slots
+
+    return slots_map
+
+
+def assign_continental_teams_from_leagues(league_results: Dict[int, Dict]) -> None:
+    """Populate COMP_TEAMS for continental competitions based on league results and coefficients."""
+    # Clear any existing continental team lists
+    continental_ids = [cid for cid, fmt in COMP_FORMAT.items() if fmt == 5]
+    for cid in continental_ids:
+        if cid in COMP_TEAMS:
+            del COMP_TEAMS[cid]
+
+    # For each continent, compute slots and pick teams
+    for cont_folder in CONTINENT_LEVEL_COMPS.keys():
+        slots_by_comp = _allocate_continental_slots(cont_folder)
+        if not slots_by_comp:
+            continue
+
+        # Already-qualified set to avoid duplicates within continent
+        already = set()
+
+        # Get continental competitions ordered by tier
+        cont_comps = [c for c in CONTINENT_LEVEL_COMPS[cont_folder] if c.get("format") == 5]
+        cont_comps.sort(key=lambda c: c.get("tier", 1))
+
+        for comp in cont_comps:
+            comp_id = comp.get("compId")
+            league_slots = slots_by_comp.get(comp_id, {})
+            qualified = []
+            for league_comp_id, slots in league_slots.items():
+                if slots <= 0:
+                    continue
+                if league_comp_id not in league_results:
+                    continue
+                table = league_results[league_comp_id].get("table", [])
+                if not table:
+                    continue
+                taken = 0
+                for row in table:
+                    if taken >= slots:
+                        break
+                    tid = row.get("teamId")
+                    if tid is None or tid in already:
+                        continue
+                    team_obj = TEAM_ID_MAP.get(tid)
+                    if not team_obj:
+                        continue
+                    qualified.append(dict(team_obj))
+                    already.add(tid)
+                    taken += 1
+            if qualified:
+                COMP_TEAMS[comp_id] = qualified
+
+
+def update_coefficients_from_continental(continental_results: Dict[int, Dict]) -> None:
+    """Update club and nation coefficients from continental competition results."""
+    global CLUB_COEFFICIENTS, NATION_COEFFICIENTS
+
+    if not continental_results:
+        return
+
+    # Seasonal points per team
+    seasonal_points = {}
+
+    # Helper: map team name to id (quick cache)
+    name_to_id = {}
+    for tid, t in TEAM_ID_MAP.items():
+        name = t.get("teamName")
+        if name:
+            name_to_id[name] = tid
+
+    for comp_id, data in continental_results.items():
+        tier = COMP_TIER.get(comp_id, 1)
+        if tier <= 0:
+            tier = 1
+        tier_mult = {1: 3.0, 2: 2.0, 3: 1.5}.get(tier, 1.0)
+
+        # Group stage points
+        for group in data.get("groups", []):
+            table = group.get("table", [])
+            for idx, row in enumerate(table):
+                tid = row.get("teamId")
+                if tid is None:
+                    # Try to resolve by name if needed
+                    tname = row.get("teamName")
+                    tid = name_to_id.get(tname)
+                if tid is None:
+                    continue
+                wins = row.get("wins", 0)
+                draws = row.get("draws", 0)
+                base = (wins * 2 + draws * 1) * tier_mult
+                bonus = 0.0
+                if idx == 0:
+                    bonus = 2.0 * tier_mult
+                elif idx == 1:
+                    bonus = 1.0 * tier_mult
+                seasonal_points[tid] = seasonal_points.get(tid, 0.0) + base + bonus
+
+        # Knockout rounds
+        for rnd in data.get("rounds", []):
+            for m in rnd.get("matches", []):
+                winner_name = m.get("winner")
+                tid = name_to_id.get(winner_name)
+                if tid is None:
+                    continue
+                seasonal_points[tid] = seasonal_points.get(tid, 0.0) + 2.0 * tier_mult
+
+        # Overall winner bonus
+        winner_name = data.get("winner")
+        if winner_name:
+            tid = name_to_id.get(winner_name)
+            if tid is not None:
+                seasonal_points[tid] = seasonal_points.get(tid, 0.0) + 5.0 * tier_mult
+
+    # Decay previous coefficients and add new season
+    for tid, pts in seasonal_points.items():
+        prev = CLUB_COEFFICIENTS.get(tid, 0.0)
+        CLUB_COEFFICIENTS[tid] = prev * 0.8 + pts
+
+    # Aggregate by nation
+    nation_seasonal = {}
+    for tid, pts in seasonal_points.items():
+        key = TEAM_NATION_KEYS.get(tid)
+        if not key:
+            continue
+        nation_seasonal[key] = nation_seasonal.get(key, 0.0) + pts
+
+    for key, pts in nation_seasonal.items():
+        prev = NATION_COEFFICIENTS.get(key, 0.0)
+        NATION_COEFFICIENTS[key] = prev * 0.8 + pts
+
+
+def sim_supercups(league_results: Dict[int, Dict],
+                  cup_results: Dict[int, Dict],
+                  continental_results: Dict[int, Dict]) -> Dict[int, Dict]:
+    """Simulate all configured super cup competitions as single-match cups."""
+    results = {}
+
+    # Build helper for winners
+    league_winners = {}
+    for cid, data in league_results.items():
+        table = data.get("table", [])
+        if table:
+            league_winners[cid] = table[0].get("teamId")
+
+    cup_winners = {}
+    for cid, data in cup_results.items():
+        wname = data.get("winner")
+        if not wname:
+            continue
+        for tid, t in TEAM_ID_MAP.items():
+            if t.get("teamName") == wname:
+                cup_winners[cid] = tid
+                break
+
+    continental_winners = {}
+    for cid, data in continental_results.items():
+        wname = data.get("winner")
+        if not wname:
+            continue
+        for tid, t in TEAM_ID_MAP.items():
+            if t.get("teamName") == wname:
+                continental_winners[cid] = tid
+                break
+
+    for sc_id, sources in SUPER_CUPS.items():
+        participants = []
+        for sid in sources:
+            fmt = COMP_FORMAT.get(sid)
+            tid = None
+            if fmt == 0:
+                tid = league_winners.get(sid)
+            elif fmt == 1:
+                tid = cup_winners.get(sid)
+            elif fmt == 5:
+                tid = continental_winners.get(sid)
+            if tid is None:
+                continue
+            team = TEAM_ID_MAP.get(tid)
+            if team:
+                participants.append(team)
+
+        # We need at least 2 teams
+        if len(participants) < 2:
+            continue
+
+        home, away = participants[0], participants[1]
+        gh, ga = _simulate_match(home, away, force_winner=True)
+        winner = home if gh > ga else away
+
+        match = {
+            "home_team": home.get("teamName", ""),
+            "away_team": away.get("teamName", ""),
+            "home_goals": gh,
+            "away_goals": ga,
+            "winner": winner.get("teamName", "")
+        }
+        sc_round = {
+            "round_name": "Supercup Final",
+            "matches": [match]
+        }
+        results[sc_id] = {
+            "rounds": [sc_round],
+            "winner": winner.get("teamName", "")
+        }
+
+    return results
+
+
+# Override seeding in continental simulation to use coefficients too
+_old_simContinental = simContinental
+
+
+def simContinental(competitions: Dict[int, List[Dict]], league_results: Dict[int, Dict]) -> Dict[int, Dict]:
+    """Wrapper around original simContinental that seeds by club coefficients."""
+    # Adjust team reputationFactors with coefficient boost for seeding only
+    # We'll temporarily augment team objects and then call original function.
+    boosted_competitions = {}
+    for cid, teams in competitions.items():
+        boosted_teams = []
+        for t in teams:
+            t_copy = dict(t)
+            tid = t_copy.get("teamId")
+            coeff = CLUB_COEFFICIENTS.get(tid, 0.0)
+            base_rep = t_copy.get("reputationFactor", 50)
+            # Small boost from coefficient
+            t_copy["reputationFactor"] = base_rep + coeff * 0.2
+            boosted_teams.append(t_copy)
+        boosted_competitions[cid] = boosted_teams
+    return _old_simContinental(boosted_competitions, league_results)
+
+
+def run_season(show_fixtures: bool = False, show_table: bool = True,
+               run_cups: bool = True, run_continental: bool = True) -> Tuple[Dict, Dict, Dict, Dict]:
+    """Run a complete season simulation with continental qualification and supercups."""
+    global CURRENT_SEASON, LEAGUE_HISTORY, CUP_HISTORY, _RATING_CACHE
+
+    # Clear rating cache at start of season
+    _RATING_CACHE.clear()
+
+    # Build helper mappings
+    _build_team_nation_keys()
+    _build_supercup_configs()
+
+    # Prepare competition inputs
+    league_input = {cid: teams for cid, teams in COMP_TEAMS.items() if COMP_FORMAT.get(cid) == 0}
+    cup_input = {cid: teams for cid, teams in COMP_TEAMS.items() if COMP_FORMAT.get(cid) == 1}
+
+    # Simulate leagues
+    league_results = simSeason(league_input)
+    if show_table or show_fixtures:
+        displayResults(league_results, show_fixtures=show_fixtures, show_table=show_table)
+
+    # Simulate domestic cups
+    if run_cups and cup_input:
+        cup_results = simCups(cup_input, league_results)
+        displayCupResults(cup_results)
+    else:
+        cup_results = {}
+
+    # Assign and simulate continental competitions
+    if run_continental and CONTINENT_LEVEL_COMPS:
+        assign_continental_teams_from_leagues(league_results)
+        continental_input = {cid: teams for cid, teams in COMP_TEAMS.items() if COMP_FORMAT.get(cid) == 5}
+        if continental_input:
+            continental_results = simContinental(continental_input, league_results)
+            displayContinentalResults(continental_results)
+        else:
+            continental_results = {}
+    else:
+        continental_results = {}
+
+    # Simulate super cups (domestic + UEFA Super Cup)
+    supercup_results = sim_supercups(league_results, cup_results, continental_results)
+    if supercup_results:
+        displayCupResults(supercup_results)
+        cup_results.update(supercup_results)
+
+    # Update coefficients after continental competitions
+    update_coefficients_from_continental(continental_results)
+
+    # Adjust ratings
+    change_report = adjust_team_ratings_after_season(league_results)
+    print_change_report(change_report)
+
+    # Record history
+    record_history(league_results, cup_results, continental_results)
+
+    # Increment season counters
+    CURRENT_SEASON += 1
+    LEAGUE_HISTORY.append(league_results)
+    CUP_HISTORY.append(cup_results)
+
+    # Get statistics
+    season_stats = get_season_statistics(league_results, cup_results, continental_results)
+
+    return league_results, cup_results, continental_results, season_stats

@@ -1,11 +1,52 @@
 [
-    {
-        "nationId": 0,
-        "nationName": "Germany",
-        "nationReputation": 90,
-        "ntAttack": 90,
-        "ntMidfield": 88,
-        "ntDefense": 89,
-        "ntGoalkeeping": 87
-    }
+  {
+    "nationId": 0,
+    "nationName": "Germany",
+    "continentId": 0,
+    "nationReputation": 90,
+    "ntAttack": 90,
+    "ntMidfield": 88,
+    "ntDefense": 89,
+    "ntGoalkeeping": 87
+  },
+  {
+    "nationId": 1,
+    "nationName": "England",
+    "continentId": 0,
+    "nationReputation": 95,
+    "ntAttack": 93,
+    "ntMidfield": 92,
+    "ntDefense": 91,
+    "ntGoalkeeping": 90
+  },
+  {
+    "nationId": 2,
+    "nationName": "France",
+    "continentId": 0,
+    "nationReputation": 88,
+    "ntAttack": 88,
+    "ntMidfield": 87,
+    "ntDefense": 86,
+    "ntGoalkeeping": 85
+  },
+  {
+    "nationId": 3,
+    "nationName": "Italy",
+    "continentId": 0,
+    "nationReputation": 89,
+    "ntAttack": 89,
+    "ntMidfield": 88,
+    "ntDefense": 88,
+    "ntGoalkeeping": 87
+  },
+  {
+    "nationId": 4,
+    "nationName": "Spain",
+    "continentId": 0,
+    "nationReputation": 92,
+    "ntAttack": 92,
+    "ntMidfield": 91,
+    "ntDefense": 90,
+    "ntGoalkeeping": 89
+  }
 ]

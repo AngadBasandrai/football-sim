@@ -1,0 +1,102 @@
+[
+  {
+    "compId": 100,
+    "compName": "Premier League",
+    "shortName": "PL",
+    "nationId": 1,
+    "continentId": 0,
+    "tier": 1,
+    "format": 0,
+    "noOfTeams": 20,
+    "noOfRounds": 2,
+    "reputationFactor": 90
+  },
+  {
+    "compId": 101,
+    "compName": "EFL Championship",
+    "shortName": "EFL-C",
+    "nationId": 1,
+    "continentId": 0,
+    "tier": 2,
+    "format": 0,
+    "noOfTeams": 16,
+    "noOfRounds": 2,
+    "reputationFactor": 70
+  },
+  {
+    "compId": 102,
+    "compName": "EFL League One",
+    "shortName": "L1",
+    "nationId": 1,
+    "continentId": 0,
+    "tier": 3,
+    "format": 0,
+    "noOfTeams": 16,
+    "noOfRounds": 2,
+    "reputationFactor": 55
+  },
+  {
+    "compId": 103,
+    "compName": "EFL League Two",
+    "shortName": "L2",
+    "nationId": 1,
+    "continentId": 0,
+    "tier": 4,
+    "format": 0,
+    "noOfTeams": 16,
+    "noOfRounds": 2,
+    "reputationFactor": 45
+  },
+  {
+    "compId": 104,
+    "compName": "FA Cup",
+    "shortName": "FA Cup",
+    "nationId": 1,
+    "continentId": 0,
+    "tier": 1,
+    "format": 1,
+    "noOfTeams": 0,
+    "noOfRounds": 0,
+    "reputationFactor": 80
+  },
+  {
+    "compId": 105,
+    "compName": "EFL Cup",
+    "shortName": "Carabao Cup",
+    "nationId": 1,
+    "continentId": 0,
+    "tier": 1,
+    "format": 1,
+    "noOfTeams": 0,
+    "noOfRounds": 0,
+    "reputationFactor": 65
+  },
+  {
+    "compId": 106,
+    "compName": "EFL Trophy",
+    "shortName": "EFL Trophy",
+    "nationId": 1,
+    "continentId": 0,
+    "tier": 2,
+    "format": 1,
+    "noOfTeams": 0,
+    "noOfRounds": 0,
+    "reputationFactor": 55
+  },
+  {
+    "compId": 107,
+    "compName": "FA Community Shield",
+    "shortName": "Community Shield",
+    "nationId": 1,
+    "continentId": 0,
+    "tier": 1,
+    "format": 6,
+    "noOfTeams": 2,
+    "noOfRounds": 1,
+    "reputationFactor": 60,
+    "superCupOf": [
+      100,
+      104
+    ]
+  }
+]

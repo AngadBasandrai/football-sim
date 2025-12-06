@@ -1,21 +1,21 @@
 [
   {
-    "compId": 400,
-    "compName": "La Liga",
-    "shortName": "LL",
-    "nationId": 4,
+    "compId": 300,
+    "compName": "Serie A",
+    "shortName": "SA",
+    "nationId": 3,
     "continentId": 0,
     "tier": 1,
     "format": 0,
     "noOfTeams": 16,
     "noOfRounds": 2,
-    "reputationFactor": 90
+    "reputationFactor": 87
   },
   {
-    "compId": 401,
-    "compName": "La Liga 2",
-    "shortName": "LL2",
-    "nationId": 4,
+    "compId": 301,
+    "compName": "Serie B",
+    "shortName": "SB",
+    "nationId": 3,
     "continentId": 0,
     "tier": 2,
     "format": 0,
@@ -24,10 +24,10 @@
     "reputationFactor": 70
   },
   {
-    "compId": 402,
-    "compName": "Copa del Rey",
-    "shortName": "CdR",
-    "nationId": 4,
+    "compId": 302,
+    "compName": "Coppa Italia",
+    "shortName": "Coppa Italia",
+    "nationId": 3,
     "continentId": 0,
     "tier": 1,
     "format": 1,
@@ -36,10 +36,10 @@
     "reputationFactor": 78
   },
   {
-    "compId": 403,
-    "compName": "Supercopa de Espa\u00f1a",
-    "shortName": "Supercup ESP",
-    "nationId": 4,
+    "compId": 303,
+    "compName": "Supercoppa Italiana",
+    "shortName": "Supercup ITA",
+    "nationId": 3,
     "continentId": 0,
     "tier": 1,
     "format": 6,
@@ -47,8 +47,8 @@
     "noOfRounds": 1,
     "reputationFactor": 60,
     "superCupOf": [
-      400,
-      402
+      300,
+      302
     ]
   }
 ]

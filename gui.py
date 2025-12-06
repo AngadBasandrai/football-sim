@@ -1085,6 +1085,9 @@ class App(ctk.CTk):
 
         contc_rows = []
         for comp in sim.CONTINENT_LEVEL_COMPS.get(cont_folder, []):
+            # Only show true continental tournaments (format 5)
+            if comp.get("format") != 5:
+                continue
             cid = comp.get("compId")
             cname = comp.get("compName", f"Comp {cid}")
             rep_val = comp.get("reputation", comp.get("compReputation", 0)) or 0
